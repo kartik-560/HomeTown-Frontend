@@ -212,13 +212,12 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Menu, X, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { useState, useEffect, Suspense } from "react";
+import { usePathname } from "next/navigation";
+import SearchBar from "./SearchBar";
 
 export default function Navbar() {
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [show, setShow] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -227,8 +226,6 @@ export default function Navbar() {
   const [navItems, setNavItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
   const isActive = (path) => pathname === path;
 
@@ -248,10 +245,10 @@ export default function Navbar() {
           id: category.id,
           subLinks: category.children
             ? category.children.map((subCategory) => ({
-                href: `/category/${subCategory.id}`,
-                label: subCategory.name,
-                id: subCategory.id,
-              }))
+              href: `/category/${subCategory.id}`,
+              label: subCategory.name,
+              id: subCategory.id,
+            }))
             : [],
         }));
 
@@ -292,37 +289,6 @@ export default function Navbar() {
     setMobileOpenCategory(mobileOpenCategory === categoryId ? null : categoryId);
   };
 
-  // Handle search - update URL params without navigation
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const query = searchQuery.trim();
-    
-    if (query) {
-      // Create new URLSearchParams from current params
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('search', query);
-      
-      // Update URL without navigation
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    } else {
-      // If empty, remove search param
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete('search');
-      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-      router.push(newUrl, { scroll: false });
-    }
-    
-    setSearchOpen(false);
-    setSearchQuery("");
-  };
-
-  // Handle search on Enter key
-  const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch(e);
-    }
-  };
-
   if (!show) return null;
 
   return (
@@ -351,19 +317,17 @@ export default function Navbar() {
                   onClick={() =>
                     setOpenDropdown(openDropdown === id ? null : id)
                   }
-                  className={`px-3 py-2 rounded-full flex items-center gap-1 whitespace-nowrap transition-colors duration-150 ${
-                    isActive(href)
+                  className={`px-3 py-2 rounded-full flex items-center gap-1 whitespace-nowrap transition-colors duration-150 ${isActive(href)
                       ? "bg-[#F6E6CB]/80 text-[#A0937D] shadow"
                       : "hover:bg-[#A0937D]/70 hover:text-white"
-                  }`}
+                    }`}
                 >
                   {label}
                   {subLinks && subLinks.length > 0 && (
                     <ChevronDown
                       size={16}
-                      className={`transition-transform duration-300 ${
-                        openDropdown === id ? "rotate-180" : ""
-                      }`}
+                      className={`transition-transform duration-300 ${openDropdown === id ? "rotate-180" : ""
+                        }`}
                     />
                   )}
                 </button>
@@ -387,39 +351,17 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Desktop Search */}
-        <div className="flex items-center gap-3 ml-3">
-          <div className="relative">
-            <Search
-              className="cursor-pointer text-[#3b3323] hover:text-[#A0937D]"
-              size={22}
-              onClick={() => setSearchOpen(!searchOpen)}
-            />
-            {searchOpen && (
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                onBlur={() => {
-                  setTimeout(() => setSearchOpen(false), 200);
-                }}
-                autoFocus
-                className="absolute right-0 top-9 w-48 bg-white/90 text-[#3b3323] rounded-md px-3 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-[#A0937D]"
-              />
-            )}
-          </div>
-        </div>
+        {/* Search with Suspense */}
+        <Suspense fallback={<div className="w-6 h-6"></div>}>
+          <SearchBar />
+        </Suspense>
       </nav>
 
       {/* Mobile Navbar */}
       <div className="md:hidden flex items-center gap-4 ml-auto">
-        <Search
-          className="cursor-pointer text-[#3b3323] hover:text-[#A0937D]"
-          size={22}
-          onClick={() => setSearchOpen(!searchOpen)}
-        />
+        <Suspense fallback={<div className="w-6 h-6"></div>}>
+          <SearchBar />
+        </Suspense>
         <button
           className="focus:outline-none"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -432,28 +374,6 @@ export default function Navbar() {
           )}
         </button>
       </div>
-
-      {/* Mobile Search Input */}
-      {searchOpen && (
-        <div className="absolute top-20 left-4 right-4 bg-white shadow-md rounded-xl p-4 md:hidden z-40">
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoFocus
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A0937D] text-[#3b3323]"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-[#A0937D] text-white rounded-lg hover:bg-[#8a7d6b] transition font-medium"
-            >
-              Search
-            </button>
-          </form>
-        </div>
-      )}
 
       {/* Mobile Menu */}
       {menuOpen && (
@@ -474,7 +394,7 @@ export default function Navbar() {
                   >
                     {label}
                   </Link>
-                  
+
                   {subLinks && subLinks.length > 0 && (
                     <button
                       onClick={() => toggleMobileCategory(id)}
@@ -483,9 +403,8 @@ export default function Navbar() {
                     >
                       <ChevronDown
                         size={18}
-                        className={`transition-transform duration-300 ${
-                          mobileOpenCategory === id ? "rotate-180" : ""
-                        }`}
+                        className={`transition-transform duration-300 ${mobileOpenCategory === id ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
                   )}
