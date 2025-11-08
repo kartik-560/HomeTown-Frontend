@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    ".next/types/**/*.ts",
+    "src/app/components/Navbar.jsx",
+    "src/app/components/Category.jsx",
+    "src/app/components/FeatureSection.jsx",
+    "src/app/components/ProductCard.jsx",
+    "src/app/components/Footer.jsx",
+    "src/app/components/StealDeal.jsx",
+    "src/app/signIn/page.jsx",
+    "src/app/register/page.jsx",
+    "src/app/layout.tsx",
+    "src/app/products/page.jsx",
+    "next.config.js"
+  ],
+  "exclude": ["node_modules"]
+}
