@@ -4,11 +4,12 @@ import Link from "next/link";
 import Navbar from "./components/Navbar";
 import Newarrival from "./components/Narrival";
 import Category from "./components/Category";
-import A from "./components/A";
+
 import ProductCard from "./components/ProductCard";
 import SecondBanner from "./components/SecondBanner";
 import StealDeal from "./components/StealDeal";
 import DemistifyHometown from "./components/DemistifyHometown";
+import ShopByRoom from "./components/ShopByRoom";
 
 export default function HomePage() {
   return (
@@ -64,14 +65,18 @@ export default function HomePage() {
             <Navbar />
           </div>
         </section>
-        {/* ✅ Arrival*/}
-        <Newarrival />
         {/* ✅ Popular Categories Section */}
-        <Category />
-        {/* Animation */}
-        <A />
-        {/* ✅ Product Cards Section */}
+         <Category />
+
+         {/* ✅ Product Cards Section */}
         <ProductCard />
+          {/* ✅ Arrival*/}
+        {/* <Newarrival /> */}
+
+        
+        {/* Animation */}
+        <ShopByRoom />
+        
         {/* ✅ banner2 */}
         <SecondBanner />
         {/* ✅ Steal Deal Section */}
