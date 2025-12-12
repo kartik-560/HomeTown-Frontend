@@ -27,8 +27,9 @@ export default function Navbar() {
           `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/categories/tree/hierarchy`
         );
         const categories = await response.json();
+        const limitedCategories = categories.slice(0, 6);
 
-        const transformedItems = categories.map((category) => ({
+        const transformedItems = limitedCategories.map((category) => ({
           label: category.name,
           href: `/category/${category.id}`,
           id: category.id,
@@ -107,8 +108,8 @@ export default function Navbar() {
                     setOpenDropdown(openDropdown === id ? null : id)
                   }
                   className={`px-3 py-2 rounded-full flex items-center gap-1 whitespace-nowrap transition-colors duration-150 ${isActive(href)
-                      ? "bg-[#F6E6CB]/80 text-[#A0937D] shadow"
-                      : "hover:bg-[#A0937D]/70 hover:text-white"
+                    ? "bg-[#F6E6CB]/80 text-[#A0937D] shadow"
+                    : "hover:bg-[#A0937D]/70 hover:text-white"
                     }`}
                 >
                   {label}

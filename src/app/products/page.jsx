@@ -41,6 +41,7 @@ export default function AllProductsPage() {
         }
 
         const data = await response.json();
+        
         setProducts(data);
         setFilteredProducts(data);
       } catch (error) {
